@@ -50,3 +50,10 @@ SELECT project_id, count(*)::bigint AS resource_count
 FROM project_resource
 WHERE project_id = ANY(sqlc.arg('project_ids')::uuid[])
 GROUP BY project_id;
+
+-- name: ListLocalDirectoryResourcesForDaemon :many
+SELECT * FROM project_resource
+WHERE workspace_id = $1
+  AND resource_type = 'local_directory'
+  AND resource_ref->>'daemon_id' = $2
+ORDER BY project_id, position ASC, created_at ASC;

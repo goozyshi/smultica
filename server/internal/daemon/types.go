@@ -46,6 +46,7 @@ type RepoData struct {
 // resource as delivered to the daemon. resource_ref is type-specific JSON.
 type ProjectResourceData struct {
 	ID           string          `json:"id"`
+	ProjectID    string          `json:"project_id,omitempty"`
 	ResourceType string          `json:"resource_type"`
 	ResourceRef  json.RawMessage `json:"resource_ref"`
 	Label        string          `json:"label,omitempty"`

@@ -115,6 +115,7 @@ import type {
   CreateProjectResourceRequest,
   UpdateProjectResourceRequest,
   ListProjectResourcesResponse,
+  ListProjectSpecChangesResponse,
   Label,
   IssueProperty,
   IssuePropertyValue,
@@ -345,6 +346,7 @@ import {
   RuntimeUsageListSchema,
   SearchIssuesResponseSchema,
   SearchProjectsResponseSchema,
+  ListProjectSpecChangesResponseSchema,
   SearchIndexManifestSchema,
   SearchIndexSnapshotPageSchema,
   SearchIndexChangesSchema,
@@ -4114,6 +4116,15 @@ export class ApiClient {
     projectId: string,
   ): Promise<ListProjectResourcesResponse> {
     return this.fetch(`/api/projects/${projectId}/resources`);
+  }
+
+  async listProjectSpecChanges(
+    projectId: string,
+  ): Promise<ListProjectSpecChangesResponse> {
+    const raw = await this.fetch<unknown>(`/api/projects/${projectId}/spec-changes`);
+    return parseWithFallback(raw, ListProjectSpecChangesResponseSchema, { changes: [] }, {
+      endpoint: "GET /api/projects/{id}/spec-changes",
+    });
   }
 
   async createProjectResource(

@@ -339,6 +339,7 @@ type daemonWorkspaceReposResponse struct {
 	Repos        []RepoData      `json:"repos"`
 	ReposVersion string          `json:"repos_version"`
 	Settings     json.RawMessage `json:"settings,omitempty"`
+	ProjectResources []ProjectResourceData `json:"project_resources,omitempty"`
 	// CACerts carries the backend's extra CA certificates (PEM) for the
 	// daemon's git. Older daemons ignore it.
 	CACerts string `json:"ca_certs,omitempty"`
@@ -1289,7 +1290,30 @@ func (h *Handler) GetDaemonWorkspaceRepos(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	writeJSON(w, http.StatusOK, workspaceReposResponse(workspaceID, ws.Repos, ws.Settings, h.cfg.GitExtraCACerts))
+	resp := workspaceReposResponse(workspaceID, ws.Repos, ws.Settings, h.cfg.GitExtraCACerts)
+	resources, err := h.Queries.ListLocalDirectoryResourcesForDaemon(r.Context(), db.ListLocalDirectoryResourcesForDaemonParams{
+		WorkspaceID: parseUUID(workspaceID),
+		DaemonID:    strToText(middleware.DaemonIDFromContext(r.Context())),
+	})
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to list local project resources")
+		return
+	}
+	resp.ProjectResources = make([]ProjectResourceData, 0, len(resources))
+	for _, resource := range resources {
+		label := ""
+		if resource.Label.Valid {
+			label = resource.Label.String
+		}
+		resp.ProjectResources = append(resp.ProjectResources, ProjectResourceData{
+			ID:           uuidToString(resource.ID),
+			ProjectID:    uuidToString(resource.ProjectID),
+			ResourceType: resource.ResourceType,
+			ResourceRef:  json.RawMessage(resource.ResourceRef),
+			Label:        label,
+		})
+	}
+	writeJSON(w, http.StatusOK, resp)
 }
 
 // setRuntimeOffline flips a runtime offline, recording the daemon's reason when

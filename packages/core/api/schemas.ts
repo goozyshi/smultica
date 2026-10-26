@@ -1561,6 +1561,24 @@ export const EMPTY_SEARCH_PROJECTS_RESPONSE: SearchProjectsResponse = {
   projects: [],
 };
 
+export const SpecChangeSchema = z.object({
+  id: z.string(),
+  workspace_id: z.string(),
+  project_id: z.string(),
+  resource_id: z.string().optional(),
+  change_key: z.string(),
+  title: z.string(),
+  status: z.string(),
+  current_version: z.number(),
+  created_by: z.string().optional(),
+  created_at: z.string(),
+  updated_at: z.string(),
+}).loose();
+
+export const ListProjectSpecChangesResponseSchema = z.object({
+  changes: z.array(SpecChangeSchema).default([]),
+}).loose();
+
 // Local search index sync (MUL-7754). Callers reject a response that fails
 // these schemas instead of degrading to an empty value: an empty snapshot page
 // or change set would be applied to the local copy as truth.

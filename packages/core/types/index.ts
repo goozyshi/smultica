@@ -208,6 +208,7 @@ export type {
   UpdateProjectResourceRequest,
   ListProjectResourcesResponse,
 } from "./project";
+export type { SpecChange, SpecChangeStatus, ListProjectSpecChangesResponse } from "./spec-change";
 export type { PinnedItem, PinnedItemType, CreatePinRequest, ReorderPinsRequest } from "./pin";
 export type {
   GitHubInstallation,

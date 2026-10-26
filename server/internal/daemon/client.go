@@ -1102,6 +1102,7 @@ type WorkspaceReposResponse struct {
 	Repos        []RepoData      `json:"repos"`
 	ReposVersion string          `json:"repos_version"`
 	Settings     json.RawMessage `json:"settings,omitempty"`
+	ProjectResources []ProjectResourceData `json:"project_resources,omitempty"`
 	// CACerts is the server's extra CA certificates (PEM) for git; see
 	// applyGitCACerts.
 	CACerts string `json:"ca_certs,omitempty"`

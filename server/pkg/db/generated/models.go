@@ -1479,6 +1479,33 @@ type SkillToLabel struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
+type SpecArtifact struct {
+	ID           pgtype.UUID        `json:"id"`
+	ChangeID     pgtype.UUID        `json:"change_id"`
+	Version      int32              `json:"version"`
+	Kind         string             `json:"kind"`
+	RelativePath string             `json:"relative_path"`
+	Digest       string             `json:"digest"`
+	Status       string             `json:"status"`
+	ScannedAt    pgtype.Timestamptz `json:"scanned_at"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
+}
+
+type SpecChange struct {
+	ID             pgtype.UUID        `json:"id"`
+	WorkspaceID    pgtype.UUID        `json:"workspace_id"`
+	ProjectID      pgtype.UUID        `json:"project_id"`
+	ResourceID     pgtype.UUID        `json:"resource_id"`
+	ChangeKey      string             `json:"change_key"`
+	Title          string             `json:"title"`
+	Status         string             `json:"status"`
+	CurrentVersion int32              `json:"current_version"`
+	CreatedBy      pgtype.UUID        `json:"created_by"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+}
+
 type Squad struct {
 	ID           pgtype.UUID        `json:"id"`
 	WorkspaceID  pgtype.UUID        `json:"workspace_id"`

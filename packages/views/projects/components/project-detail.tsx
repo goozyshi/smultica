@@ -18,6 +18,8 @@ import { useWorkspaceId } from "@multica/core/hooks";
 import { useIssuesScope } from "@multica/core/issues/stores";
 import { useRecentContextStore } from "@multica/core/chat";
 import { useWorkspacePaths } from "@multica/core/paths";
+import { useFeatureEnabled } from "@multica/core/config";
+import { OPEN_SPEC_WORKFLOW_FLAG } from "@multica/core/feature-flags";
 import { useActorName } from "@multica/core/workspace/hooks";
 import { PROJECT_STATUS_ORDER, PROJECT_STATUS_CONFIG, PROJECT_PRIORITY_ORDER } from "@multica/core/projects/config";
 import { getProjectIssueMetrics } from "./project-issue-metrics";
@@ -28,6 +30,7 @@ import { PriorityIcon } from "../../issues/components/priority-icon";
 import { ProjectResourcesSection } from "./project-resources-section";
 import { ProjectStartDatePicker } from "./project-start-date-picker";
 import { ProjectDueDatePicker } from "./project-due-date-picker";
+import { OpenSpecWorkflowSection } from "./openspec-workflow-section";
 import { ProjectWorkflowControl } from "../../workflows/project-workflow-row";
 import { ProjectWorkflowMenu } from "../../workflows/project-workflow-menu";
 import { IssueSurface } from "../../issues/surface/issue-surface";
@@ -161,6 +164,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
   const [propertiesOpen, setPropertiesOpen] = useState(true);
   const [progressOpen, setProgressOpen] = useState(true);
   const [descriptionOpen, setDescriptionOpen] = useState(true);
+  const openSpecWorkflowEnabled = useFeatureEnabled(OPEN_SPEC_WORKFLOW_FLAG, false);
 
   // Sidebar panel
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
@@ -484,6 +488,10 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
 
       {/* Resources */}
       <ProjectResourcesSection projectId={projectId} />
+
+      {openSpecWorkflowEnabled && (
+        <OpenSpecWorkflowSection workspaceId={wsId} projectId={projectId} />
+      )}
     </div>
   );
 

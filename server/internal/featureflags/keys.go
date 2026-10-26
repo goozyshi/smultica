@@ -53,11 +53,15 @@ const (
 	// projectWorkflowsCompat keeps workflow UI available in installed desktop
 	// clients that still gate it on this config decision and default to false.
 	projectWorkflowsCompat = "project_workflows_v1"
+	// OpenSpecWorkflow gates the experimental OpenSpec-backed Change surface.
+	// It is deliberately off until the local discovery/runtime path is shipped.
+	OpenSpecWorkflow = "openspec_workflow"
 )
 
 var frontendPublicFlags = []string{
 	BillingWorkspaceSubscriptions,
 	ComposioMCPApps,
+	OpenSpecWorkflow,
 	PluginsV1,
 }
 
@@ -71,6 +75,10 @@ func ComposioMCPAppsEnabled(ctx context.Context, flags *featureflag.Service) boo
 
 func PluginsV1Enabled(ctx context.Context, flags *featureflag.Service) bool {
 	return flags.IsEnabled(ctx, PluginsV1, false)
+}
+
+func OpenSpecWorkflowEnabled(ctx context.Context, flags *featureflag.Service) bool {
+	return flags.IsEnabled(ctx, OpenSpecWorkflow, false)
 }
 
 func TriageV1Enabled(ctx context.Context, flags *featureflag.Service) bool {

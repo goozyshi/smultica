@@ -2,7 +2,9 @@
 
 import { Fragment, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronDown, ChevronRight, LayoutTemplate, Plus } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, Code2, FileText, LayoutTemplate, MessageSquare, Plus, TestTube2 } from "lucide-react";
+import { useFeatureEnabled } from "@multica/core/config";
+import { OPEN_SPEC_WORKFLOW_FLAG } from "@multica/core/feature-flags";
 import { useAuthStore } from "@multica/core/auth";
 import { useWorkspaceId } from "@multica/core/hooks";
 import { useIssueStatuses } from "@multica/core/issue-statuses/hooks";
@@ -54,6 +56,7 @@ export function WorkflowsTab() {
   // Any member creates workflows; a workflow's owner and admins edit it
   // (MUL-8120). Mirrors useWorkflowPermissions.
   const canCreate = !!role;
+  const openSpecEnabled = useFeatureEnabled(OPEN_SPEC_WORKFLOW_FLAG, false);
   const canEditWorkflow = (id: string) => {
     const owner = workflows.find((w) => w.id === id)?.owner_id;
     return isAdmin || (!!currentUser?.id && !!owner && owner === currentUser.id);
@@ -151,6 +154,7 @@ export function WorkflowsTab() {
         )
       }
     >
+      {openSpecEnabled && <OpenSpecWorkflowCard />}
       <div className="divide-y divide-surface-border overflow-hidden rounded-lg border border-surface-border bg-card">
         {defaultRow ? (
           <WorkflowRow workflow={defaultRow} projects={defaultProjects} onOpen={() => openEditor(defaultRow.id)} />
@@ -173,6 +177,51 @@ export function WorkflowsTab() {
         workflowUsage={usage}
       />
     </SettingsTab>
+  );
+}
+
+function OpenSpecWorkflowCard() {
+  const stages = [
+    { label: "Discuss", icon: MessageSquare, detail: "Clarify the requirement" },
+    { label: "Proposal / Design", icon: FileText, detail: "Review OpenSpec artifacts" },
+    { label: "Implement", icon: Code2, detail: "Execute tasks through agents" },
+    { label: "Self-test", icon: TestTube2, detail: "Developer verification" },
+    { label: "QA handoff", icon: CheckCircle2, detail: "Independent testing" },
+  ];
+
+  return (
+    <section className="mb-5 rounded-lg border border-surface-border bg-card p-4">
+      <div className="flex items-start gap-3">
+        <div className="mt-0.5 rounded-md bg-accent p-2">
+          <FileText className="size-4 text-foreground" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-body font-semibold">OpenSpec Workflow</h3>
+            <span className="rounded-full border border-emerald-500/30 px-2 py-0.5 text-[11px] text-emerald-600">
+              Experimental
+            </span>
+          </div>
+          <p className="mt-1 text-caption leading-5 text-muted-foreground">
+            A repository-backed workflow for confirming requirements, implementing changes, and handing off to QA.
+          </p>
+        </div>
+      </div>
+      <div className="mt-4 grid gap-2 sm:grid-cols-5">
+        {stages.map(({ label, icon: Icon, detail }, index) => (
+          <div key={label} className="relative rounded-md border border-surface-border px-3 py-2.5">
+            <div className="flex items-center gap-2 text-caption font-medium">
+              <Icon className="size-3.5 text-muted-foreground" />
+              <span>{index + 1}. {label}</span>
+            </div>
+            <p className="mt-1 text-[11px] leading-4 text-muted-foreground">{detail}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 text-[11px] text-muted-foreground">
+        Source of truth: OpenSpec artifacts in the linked repository. Existing Issue Workflows remain available below.
+      </p>
+    </section>
   );
 }
 
